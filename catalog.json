@@ -8,6 +8,14 @@
     "manifest": "https://raw.githubusercontent.com/MJl2517/dnd-point-crawl-2024/main/module.json"
   },
   {
+    "id": "mjl-dungeon-sketch",
+    "title": "MJl - Dungeon Sketch",
+    "category": "Карты",
+    "description": "Редактор подземелий прямо на сцене Foundry. Рисуйте комнаты, стены и двери, добавляйте этажи, свет и мебель. Изменения сохраняются автоматически, а точки интереса можно связать с Хрониками.",
+    "art": "dungeon-sketch",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Dungeon-Sketch/main/module.json"
+  },
+  {
     "id": "dungeondraft-tile-browser",
     "title": "MJl - Dungeondraft Tile Browser",
     "category": "Карты",

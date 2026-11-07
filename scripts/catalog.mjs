@@ -1,6 +1,6 @@
 export const HUB_ID="mjl-modules-hub";
 const owner="mjl2517";
-const art=new Set(["pointcrawl","travel","dungeon","importer"]);
+const art=new Set(["pointcrawl","travel","dungeon","importer","dungeon-sketch"]);
 const clean=text=>typeof text==="string"?text.trim():"";
 const key=/^[a-z\d][a-z\d-]{0,63}$/;
 

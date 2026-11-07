@@ -8,6 +8,12 @@
 
 ## Обложки этого выпуска
 
+**Dungeon Sketch**
+
+Встроенный ImageGen. Обложки Pointcrawl и Dungeondraft использованы как референсы стиля и эмблемы.
+
+Use case: illustration-story. Create a new 3:2 full-bleed raster fantasy catalogue cover for Dungeon Sketch, matching the two supplied images as style and mascot references only. Use painterly digital gouache and oil texture, amber candlelight, dark plum shadows and vivid raspberry red. A large round raspberry mascot with two green leaves, no face or limbs, peers over the far edge of a horizontal parchment on a cartographer's table. Seen at a high three-quarter angle, the parchment shows a boldly hand-drawn top-down dungeon floor plan with a clear stair symbol, stone hatching, and a few fresh raspberry-ink strokes. A red feather quill hovers above an unfinished wall as if guided by invisible hands. Keep the raspberry, quill and flat plan distinct in the central 75%, readable at card size. Do not make a miniature stone diorama, folded world map, or magical 3D transformation. No writing, letters, logos, UI, borders, watermark, or characters.
+
 Обложки созданы встроенным ImageGen. Для Pointcrawl использовано прежнее изображение малины как референс, для остальных обложек использованы текстовые запросы.
 
 Use case: illustration-story. Create a premium painterly fantasy cover for a Foundry VTT module catalogue, landscape 3:2. Rich digital gouache and oil brush texture, warm parchment gold highlights against dark aubergine, warm raspberry accents. Painterly material detail, dimensional lighting, striking readable silhouette. Main subject fully framed inside central 75% so it survives landscape card cropping. Full bleed, no text, letters, lettering, border, UI, watermark or logos.
