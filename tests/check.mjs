@@ -13,6 +13,7 @@ assert.equal(cards[0],pointcrawl);
 assert.equal(cards.length,3);
 assert.deepEqual(normalizeCatalog([{id:"local-only",title:"Локальный модуль"}]),[]);
 for(const card of cards){
+  assert.match(card.title,/^MJl - .+/);
   const image=await readFile(new URL(`../art/${card.art}.webp`,import.meta.url));
   assert.equal(image.toString("ascii",8,12),"WEBP");
 }

@@ -1,7 +1,7 @@
 [
   {
     "id": "mjl-pointcrawl",
-    "title": "MJl Pointcrawl",
+    "title": "MJl - Pointcrawl",
     "category": "Путешествия",
     "description": "Помогает вести путешествия в D&D 5e. Мастер размечает регионы и маршруты, а игроки выбирают путь и отправляют заявки на переход. Локации можно связать с карточками Хроник.",
     "art": "pointcrawl",
@@ -9,7 +9,7 @@
   },
   {
     "id": "dungeondraft-tile-browser",
-    "title": "Dungeondraft Tile Browser",
+    "title": "MJl - Dungeondraft Tile Browser",
     "category": "Карты",
     "description": "Собирает объекты из пакетов Dungeondraft и папок с изображениями в библиотеку. Ищите мебель и декор по тегам, перекрашивайте доступные варианты и размещайте их на сцене как тайлы.",
     "art": "dungeon",
@@ -17,7 +17,7 @@
   },
   {
     "id": "watabou-one-page-dungeon-importer",
-    "title": "One Page Dungeon Importer",
+    "title": "MJl - One Page Dungeon Importer",
     "category": "Карты",
     "description": "Превращает SVG-карту Watabou One Page Dungeon в сцену Foundry. Импортирует фон, совмещает сетку и автоматически расставляет стены и двери.",
     "art": "importer",

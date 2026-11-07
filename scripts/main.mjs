@@ -1,6 +1,7 @@
 import {HUB_ID as ID,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "./catalog.mjs";
 
 const SOURCE="https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/catalog.json";
+const TITLE="MJl - Modules Hub";
 const {ApplicationV2,DialogV2}=foundry.applications.api;
 const {escapeHTML:esc,isNewerVersion:newer}=foundry.utils;
 const asset=name=>foundry.utils.getRoute(`modules/${ID}/art/${name==="travel"?"pointcrawl":name}.webp`);
@@ -36,7 +37,7 @@ function refresh(){
       }catch{errors++;}
     }
     const next=[...entries.values()];
-    const releases=[...next,{id:ID,title:"MJl Modules Hub",manifest:new URL("module.json",SOURCE).href}];
+    const releases=[...next,{id:ID,title:TITLE,manifest:new URL("module.json",SOURCE).href}];
     for(let i=0;i<releases.length;i+=6){
       await Promise.all(releases.slice(i,i+6).map(async card=>{
         try{
@@ -50,8 +51,8 @@ function refresh(){
     const announced=new Set(previous.announced??[]),versions={...previous.versions};
     const fresh=news.filter(card=>!announced.has(card.id));
     const changed=updates.filter(card=>versions[card.id]!==card.release.version);
-    if(fresh.length)ui.notifications.info(`MJl Hub · Новинки: ${fresh.map(card=>esc(card.title)).join(", ")}`);
-    if(changed.length)ui.notifications.info(`MJl Hub · Обновления: ${changed.map(card=>`${esc(card.title)} ${card.release.version}`).join(", ")}`);
+    if(fresh.length)ui.notifications.info(`${TITLE} · Новинки: ${fresh.map(card=>esc(card.title)).join(", ")}`);
+    if(changed.length)ui.notifications.info(`${TITLE} · Обновления: ${changed.map(card=>`${esc(card.title)} ${card.release.version}`).join(", ")}`);
     for(const card of fresh)announced.add(card.id);
     for(const card of changed)versions[card.id]=card.release.version;
     await savePreferences({...previous,initialized:true,announced:[...announced],versions,
@@ -99,7 +100,7 @@ async function install(card){
 class Hub extends ApplicationV2{
   static DEFAULT_OPTIONS={
     id:ID,classes:["mjl-brand","mjl-hub"],position:{width:1080,height:720},
-    window:{title:"MJl Modules Hub",icon:"fa-solid fa-store",resizable:true}
+    window:{title:TITLE,icon:"fa-solid fa-store",resizable:true}
   };
   filters={query:"",status:"",category:""};
   expanded="";
@@ -112,7 +113,7 @@ class Hub extends ApplicationV2{
       `<option value="${esc(value)}" ${this.filters[name]===value?"selected":""}>${esc(title)}</option>`).join("");
     const tiles=cards.map(card=>this.tile(card,!seen.has(card.id))).join("");
     return `<section class="mjl-hub-shell"><header class="mjl-hub-head">
-      <img src="${esc(asset("raspberry"))}" alt=""><div><h2>MJl Modules Hub</h2><p>Каталог модулей для Foundry VTT</p></div>
+      <img src="${esc(asset("raspberry"))}" alt=""><div><h2>${TITLE}</h2><p>Каталог модулей для Foundry VTT</p></div>
       <button type="button" data-hub="refresh" ${loading?"disabled":""}><i class="fa-solid fa-rotate" aria-hidden="true"></i> Проверить версии</button></header>
       <div class="mjl-hub-status" role="status">${loading?"Проверяем GitHub…":errors?`Не удалось проверить источники GitHub: ${errors}. Карточки каталога доступны.`:""}</div>
       <div class="mjl-hub-layout"><aside class="mjl-hub-filters">
@@ -219,11 +220,11 @@ Hooks.once("init",()=>{
   game.settings.register(ID,"source",{scope:"world",config:true,type:String,default:SOURCE,
     name:"Источник каталога MJl",hint:"Публичный catalog.json из репозитория MJl2517 на raw.githubusercontent.com.",
     onChange:refresh});
-  game.settings.registerMenu(ID,"open",{name:"MJl Modules Hub",label:"Открыть каталог",icon:"fa-solid fa-store",type:HubMenu,restricted:true});
+  game.settings.registerMenu(ID,"open",{name:TITLE,label:"Открыть каталог",icon:"fa-solid fa-store",type:HubMenu,restricted:true});
 });
 Hooks.on("getSceneControlButtons",controls=>{
   if(!allowed()||!controls.tokens)return;
-  controls[ID]={name:ID,title:"MJl Modules Hub",order:8,layer:"tokens",icon:"fa-solid fa-store",tools:{
+  controls[ID]={name:ID,title:TITLE,order:8,layer:"tokens",icon:"fa-solid fa-store",tools:{
     catalog:{name:"catalog",title:"Открыть каталог",icon:"fa-solid fa-store",button:true,onChange:(_event,active)=>{if(active)open();}}
   }};
 });
