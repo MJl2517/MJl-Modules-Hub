@@ -1,0 +1,55 @@
+[
+  {
+    "id": "mjl-modules-hub",
+    "title": "MJl Modules Hub",
+    "category": "Каталог",
+    "description": "Витрина модулей MJl. Показывает новинки и сверяет установленные версии с GitHub.",
+    "art": "raspberry",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/module.json"
+  },
+  {
+    "id": "mjl-pointcrawl",
+    "title": "Pointcrawl",
+    "category": "Путешествия",
+    "description": "Региональные карты, маршруты между локациями и заявки на путешествия. С Хроникой можно связать локации с карточками и галереями.",
+    "art": "travel",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/dnd-point-crawl-2024/main/module.json"
+  },
+  {
+    "id": "dungeondraft-tile-browser",
+    "title": "Dungeondraft Tile Browser",
+    "category": "Карты",
+    "description": "Каталог изображений Dungeondraft для выбора и размещения объектов на сцене Foundry.",
+    "art": "dungeon",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/Foundry-module-dungeondraft-tiles/main/dungeondraft-tile-browser/module.json"
+  },
+  {
+    "id": "watabou-one-page-dungeon-importer",
+    "title": "One Page Dungeon Importer",
+    "category": "Карты",
+    "description": "Создаёт сцены Foundry из SVG-планов генератора Watabou One Page Dungeon.",
+    "art": "dungeon",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/Foundry-module-one-page-dungeon-svg-importer/main/watabou-one-page-dungeon-importer/module.json"
+  },
+  {
+    "id": "mjl-dungeon-sketch",
+    "title": "Dungeon Sketch",
+    "category": "Карты",
+    "description": "Рисование подземелий прямо на сцене, этажи, двери, мебель, свет и точки интереса. Может открывать галереи локаций Хроники.",
+    "art": "dungeon"
+  },
+  {
+    "id": "mjl-campaign-journal",
+    "title": "Хроника",
+    "category": "Кампания",
+    "description": "Общий журнал партии с карточками персонажей, локациями, галереями артов и квестами. Поддерживает привязки к Pointcrawl и Dungeon Sketch.",
+    "art": "journal"
+  },
+  {
+    "id": "mjl-combat-ammo",
+    "title": "Боеприпасы",
+    "category": "D&D 5e",
+    "description": "Отслеживает расход боеприпасов в бою и помогает вернуть уцелевшие стрелы после сражения.",
+    "art": "combat"
+  }
+]
