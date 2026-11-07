@@ -1,19 +1,19 @@
 [
   {
+    "id": "mjl-pointcrawl",
+    "title": "MJl Pointcrawl",
+    "category": "Путешествия",
+    "description": "Региональные карты, маршруты между локациями и заявки на путешествия. С Хроникой можно связать локации с карточками и галереями.",
+    "art": "pointcrawl",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/dnd-point-crawl-2024/main/module.json"
+  },
+  {
     "id": "mjl-modules-hub",
     "title": "MJl Modules Hub",
     "category": "Каталог",
     "description": "Витрина модулей MJl. Показывает новинки и сверяет установленные версии с GitHub.",
     "art": "raspberry",
     "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/module.json"
-  },
-  {
-    "id": "mjl-pointcrawl",
-    "title": "Pointcrawl",
-    "category": "Путешествия",
-    "description": "Региональные карты, маршруты между локациями и заявки на путешествия. С Хроникой можно связать локации с карточками и галереями.",
-    "art": "travel",
-    "manifest": "https://raw.githubusercontent.com/MJl2517/dnd-point-crawl-2024/main/module.json"
   },
   {
     "id": "dungeondraft-tile-browser",

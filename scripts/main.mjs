@@ -80,7 +80,7 @@ async function install(card){
     return;
   }
   const proceed=await DialogV2.confirm({
-    classes:["mjl-hub"],window:{title:`Установка · ${card.title}`},rejectClose:false,
+    classes:["mjl-brand","mjl-hub"],window:{title:`Установка · ${card.title}`,icon:"fa-solid fa-store"},rejectClose:false,
     content:`<p>Скопируйте манифест GitHub. В меню настройки откройте «Модули → Установить модуль» и вставьте адрес. Выход в меню закроет текущий мир для всех участников.</p>
       <label>Адрес манифеста<input class="mjl-hub-url" type="url" readonly value="${esc(url.href)}"></label>
       <button type="button" class="mjl-hub-copy"><i class="fa-solid fa-copy" aria-hidden="true"></i> Скопировать адрес</button>`,
@@ -99,7 +99,7 @@ async function install(card){
 
 class Hub extends ApplicationV2{
   static DEFAULT_OPTIONS={
-    id:ID,classes:["mjl-hub"],position:{width:960,height:660},
+    id:ID,classes:["mjl-brand","mjl-hub"],position:{width:960,height:660},
     window:{title:"MJl Modules Hub",icon:"fa-solid fa-store",resizable:true}
   };
   query="";selected="";
