@@ -28,28 +28,7 @@
     "title": "One Page Dungeon Importer",
     "category": "Карты",
     "description": "Создаёт сцены Foundry из SVG-планов генератора Watabou One Page Dungeon.",
-    "art": "dungeon",
+    "art": "importer",
     "manifest": "https://raw.githubusercontent.com/MJl2517/Foundry-module-one-page-dungeon-svg-importer/main/watabou-one-page-dungeon-importer/module.json"
-  },
-  {
-    "id": "mjl-dungeon-sketch",
-    "title": "Dungeon Sketch",
-    "category": "Карты",
-    "description": "Рисование подземелий прямо на сцене, этажи, двери, мебель, свет и точки интереса. Может открывать галереи локаций Хроники.",
-    "art": "dungeon"
-  },
-  {
-    "id": "mjl-campaign-journal",
-    "title": "Хроника",
-    "category": "Кампания",
-    "description": "Общий журнал партии с карточками персонажей, локациями, галереями артов и квестами. Поддерживает привязки к Pointcrawl и Dungeon Sketch.",
-    "art": "journal"
-  },
-  {
-    "id": "mjl-combat-ammo",
-    "title": "Боеприпасы",
-    "category": "D&D 5e",
-    "description": "Отслеживает расход боеприпасов в бою и помогает вернуть уцелевшие стрелы после сражения.",
-    "art": "combat"
   }
 ]

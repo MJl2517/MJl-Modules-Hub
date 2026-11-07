@@ -1,5 +1,5 @@
 const owner="mjl2517";
-const art=new Set(["pointcrawl","travel","dungeon","journal","combat"]);
+const art=new Set(["pointcrawl","travel","dungeon","importer"]);
 const clean=text=>typeof text==="string"?text.trim():"";
 const key=/^[a-z\d][a-z\d-]{0,63}$/;
 
@@ -16,17 +16,17 @@ export function rawSource(value, filename){
 export function normalizeCatalog(entries){
   if(!Array.isArray(entries)||entries.length>80)throw Error("Ожидается список из 80 карточек или меньше.");
   const ids=new Set();
-  return entries.map(row=>{
+  return entries.filter(row=>row?.manifest).map(row=>{
     const {id,title,description,category,manifest,art:picture}=row??{};
     if(typeof id!=="string"||!key.test(id)||ids.has(id)||!clean(title)||!clean(description)){
       throw Error("В каталоге есть дубли или карточки без идентификатора, названия и описания.");
     }
     ids.add(id);
-    const url=manifest&&rawSource(manifest,"module.json");
-    if(manifest&&!url)throw Error(`Некорректный GitHub-манифест для ${id}.`);
+    const url=rawSource(manifest,"module.json");
+    if(!url)throw Error(`Некорректный GitHub-манифест для ${id}.`);
     return {id,title:clean(title).slice(0,100),description:clean(description).slice(0,700),
       category:clean(category).slice(0,60),art:art.has(picture)?picture:"raspberry",
-      manifest:url?.href??"",repo:url?`https://github.com/${url.pathname.split("/").slice(1,3).join("/")}`:""};
+      manifest:url.href,repo:`https://github.com/${url.pathname.split("/").slice(1,3).join("/")}`};
   });
 }
 
@@ -51,4 +51,14 @@ export function notices(cards, installed, previous, newer){
     return module?.active&&card.release&&newer(card.release.version,module.version);
   });
   return {news,updates};
+}
+
+export function matchesCard(card,{installed,update},{query="",status="",category=""}={}){
+  if(category&&card.category!==category)return false;
+  if(status==="active"&&!installed?.active||
+    status==="installed"&&!installed||
+    status==="update"&&!update||
+    status==="available"&&(installed||!card.release))return false;
+  const search=query.trim().toLocaleLowerCase("ru");
+  return !search||[card.title,card.description,card.category,card.id].join(" ").toLocaleLowerCase("ru").includes(search);
 }
