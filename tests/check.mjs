@@ -10,7 +10,7 @@ const hub={id:HUB_ID,title:"MJl Modules Hub",description:"Устаревшая �
 assert.ok(entries.every(card=>card.id!==HUB_ID));
 assert.deepEqual(normalizeCatalog([...entries,hub]),cards);
 assert.equal(cards[0],pointcrawl);
-assert.equal(cards.length,5);
+assert.equal(cards.length,6);
 assert.deepEqual(normalizeCatalog([{id:"local-only",title:"Локальный модуль"}]),[]);
 for(const card of cards){
   assert.match(card.title,/^MJl - .+/);

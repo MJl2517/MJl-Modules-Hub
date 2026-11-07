@@ -2,7 +2,7 @@
   "id": "mjl-modules-hub",
   "title": "MJl - Modules Hub",
   "description": "Каталог модулей MJl с проверкой версий и переходом в штатный установщик Foundry.",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "url": "https://github.com/MJl2517/MJl-Modules-Hub",
   "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/module.json",
   "download": "https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/dist/mjl-modules-hub.zip",

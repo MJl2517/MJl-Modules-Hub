@@ -1,6 +1,6 @@
 export const HUB_ID="mjl-modules-hub";
 const owner="mjl2517";
-const art=new Set(["pointcrawl","travel","dungeon","importer","dungeon-sketch","campaign-journal"]);
+const art=new Set(["pointcrawl","travel","dungeon","importer","dungeon-sketch","campaign-journal","loot-and-share"]);
 const clean=text=>typeof text==="string"?text.trim():"";
 const key=/^[a-z\d][a-z\d-]{0,63}$/;
 const versionPattern=/^[vV]?\d[\dA-Za-z.+-]{0,49}$/;

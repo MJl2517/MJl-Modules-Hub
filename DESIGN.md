@@ -8,6 +8,12 @@
 
 ## Обложки этого выпуска
 
+**Loot and Share**
+
+Встроенный ImageGen. Обложки Campaign Journal и Dungeon Sketch использованы как референсы стиля и эмблемы.
+
+Use case: illustration-story. New 3:2 full-bleed fantasy raster catalogue cover for Loot and Share. Use the supplied covers only as references for the recognizable round raspberry mascot with two green leaves, and for the series' rich oil and gouache texture, deep plum shadows and warm amber candlelight. On a medieval adventurers' table the large raspberry, without a face or limbs, peeks behind an open weathered wooden chest with brass corners. Inside are bright gold and silver coins, a rolled scroll and a red glass potion. In the foreground arrange the coins in three clearly separated small shares beside a pair of inventory pouches. Keep the raspberry, chest, and shares visually distinct and readable in the central 75% of the image. No characters, hands, maps, text, logos, interface, borders, or watermark.
+
 **Campaign Journal**
 
 Встроенный ImageGen. Обложки Pointcrawl и Dungeon Sketch использованы как референсы стиля и эмблемы.
