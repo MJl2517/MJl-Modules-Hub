@@ -6,8 +6,8 @@ const {ApplicationV2,DialogV2}=foundry.applications.api;
 const {escapeHTML:esc,isNewerVersion:newer}=foundry.utils;
 const asset=name=>foundry.utils.getRoute(`modules/${ID}/art/${name==="travel"?"pointcrawl":name}.webp`);
 const allowed=()=>game.user?.isGM&&game.user.can("SETTINGS_MODIFY");
-const blank={initialized:false,seen:[],announced:[],versions:{}};
-let cards=[],errors=0,loading,instance;
+const blank={initialized:false,seen:[],announced:[],chatVersions:{}};
+let cards=[],hubRelease,errors=0,loading,instance;
 
 function preferences(){return game.settings.get(ID,"seen")[game.world.id]??blank;}
 async function savePreferences(state){
@@ -21,7 +21,7 @@ async function json(url){
   return response.json();
 }
 
-function refresh(){
+function refresh({notify=game.settings.get(ID,"autoCheck")}={}){
   if(!allowed())return;
   if(loading)return loading;
   loading=(async()=>{
@@ -47,15 +47,21 @@ function refresh(){
       }));
     }
     cards=next;
+    hubRelease=releases.at(-1);
     const previous=preferences(),{news,updates}=notices(releases,game.modules,previous,newer,game.version);
-    const announced=new Set(previous.announced??[]),versions={...previous.versions};
+    const announced=new Set(previous.announced??[]),chatVersions={...previous.chatVersions};
     const fresh=news.filter(card=>!announced.has(card.id));
-    const changed=updates.filter(card=>versions[card.id]!==card.release.version);
     if(fresh.length)ui.notifications.info(`${TITLE} · Новинки: ${fresh.map(card=>esc(card.title)).join(", ")}`);
-    if(changed.length)ui.notifications.info(`${TITLE} · Обновления: ${changed.map(card=>`${esc(card.title)} ${card.release.version}`).join(", ")}`);
     for(const card of fresh)announced.add(card.id);
-    for(const card of changed)versions[card.id]=card.release.version;
-    await savePreferences({...previous,initialized:true,announced:[...announced],versions,
+    if(notify&&updates.length){
+      try{
+        const rows=updates.map(card=>`<li>${esc(card.title)} · ${esc(game.modules.get(card.id).version)} → <strong>${esc(card.release.version)}</strong></li>`).join("");
+        await ChatMessage.create({speaker:{alias:TITLE},whisper:[game.user.id],flags:{[ID]:{updates:true}},
+          content:`<h3>Доступны обновления</h3><ul>${rows}</ul><button type="button" data-mjl-hub-updates>Открыть обновления</button>`});
+        for(const card of updates)chatVersions[card.id]=card.release.version;
+      }catch(error){console.error(ID,error);}
+    }
+    await savePreferences({initialized:true,announced:[...announced],chatVersions,
       seen:previous.initialized?previous.seen:cards.map(card=>card.id)});
   })().catch(error=>{errors++;console.error(ID,error);}).finally(()=>{
     loading=null;
@@ -98,18 +104,18 @@ class Hub extends ApplicationV2{
     window:{title:TITLE,icon:"fa-solid fa-store",resizable:true}
   };
   filters={query:"",status:"",category:""};
-  expanded="";
+  selected="";
   scroll=0;
 
   async _renderHTML(){
-    const seen=new Set(preferences().seen??[]);
     const categories=[...new Set(cards.map(card=>card.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru"));
     const options=(name,choices)=>choices.map(([value,title])=>
       `<option value="${esc(value)}" ${this.filters[name]===value?"selected":""}>${esc(title)}</option>`).join("");
-    const tiles=cards.map(card=>this.tile(card,!seen.has(card.id))).join("");
+    const tiles=cards.map(card=>this.tile(card)).join("");
     return `<section class="mjl-hub-shell"><header class="mjl-hub-head">
       <img src="${esc(asset("raspberry"))}" alt=""><div><h2>${TITLE}</h2><p>Версия сервера Foundry ${esc(game.version)}</p></div>
-      <button type="button" data-hub="refresh" ${loading?"disabled":""}><i class="fa-solid fa-rotate" aria-hidden="true"></i> Проверить версии</button></header>
+      <div class="mjl-hub-actions">${hubRelease&&stateFor(hubRelease).update?'<button type="button" data-hub="updateHub">Обновить Hub</button>':""}
+      <button type="button" data-hub="refresh" ${loading?"disabled":""}><i class="fa-solid fa-rotate" aria-hidden="true"></i> Проверить версии</button></div></header>
       <div class="mjl-hub-status" role="status">${loading?"Проверяем GitHub…":errors?`Не удалось проверить источники GitHub: ${errors}. Карточки каталога доступны.`:""}</div>
       <div class="mjl-hub-layout"><aside class="mjl-hub-filters">
         <label>Поиск<input type="search" name="query" value="${esc(this.filters.query)}" placeholder="Найти модуль"></label>
@@ -118,28 +124,28 @@ class Hub extends ApplicationV2{
         <button type="button" data-hub="reset">Сбросить фильтры</button>
       </aside><section class="mjl-hub-results" aria-label="Модули">
         <div class="mjl-hub-grid">${tiles}</div><p data-empty hidden>По этому запросу ничего нет.</p>
-      </section></div></section>`;
+      </section><aside class="mjl-hub-details" aria-label="Сведения о модуле"></aside></div></section>`;
   }
 
-  tile(card,isNew){
+  tile(card){
+    return `<button type="button" class="mjl-hub-card" data-card="${card.id}" aria-pressed="false">
+      <img src="${esc(asset(card.art))}" alt="" loading="lazy">
+      <span class="mjl-hub-card-heading"><strong>${esc(card.title)}</strong><small>${esc(card.category)}</small></span></button>`;
+  }
+
+  details(card,isNew){
+    if(!card)return "<p>Выберите модуль из каталога.</p>";
     const {installed,update,label,compatibility,reason,candidate,canInstall,action}=stateFor(card);
-    return `<details class="mjl-hub-card" name="mjl-hub-card" data-card="${card.id}" ${this.expanded===card.id?"open":""}>
-      <summary><span class="mjl-hub-cover">
-        <img src="${esc(asset(card.art))}" alt="">
-        <span class="mjl-hub-badge" data-update="${update}" data-tooltip-text="${esc(reason)}">${esc(label)}</span>
-        ${isNew?'<span class="mjl-hub-new">Новинка</span>':""}
-      </span><span class="mjl-hub-card-heading"><span><strong>${esc(card.title)}</strong><small>${esc(card.category)}</small></span>
-      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span>
-      <span class="mjl-hub-compatibility" data-state="${compatibility.state}" data-tooltip-text="${esc(compatibility.reason)}">${esc(compatibility.requirement)}${compatibility.state==="unverified"?" · не проверено":""}</span>
-      <span class="mjl-hub-card-description">${esc(card.description)}</span></summary>
-      <div class="mjl-hub-card-details">
-      <p class="mjl-hub-availability">${esc(reason)}</p>
+    return `<h3>${esc(card.title)}</h3><p class="mjl-hub-description">${esc(card.description)}</p>
+      <p class="mjl-hub-availability" data-update="${update}">${esc(label)}${isNew?" · Новинка":""}</p>
+      <p class="mjl-hub-compatibility" data-state="${compatibility.state}" data-tooltip-text="${esc(compatibility.reason)}">${esc(compatibility.requirement)}${compatibility.state==="unverified"?" · не проверено":""}</p>
+      <p>${esc(compatibility.reason)}</p>
       ${installed?`<p>На сервере ${esc(installed.version)}</p>`:""}
       ${card.release?`<p>На GitHub ${esc(card.release.version)}${card.release.verified?` · Проверено на Foundry ${esc(card.release.verified)}`:""}</p>`:""}
       <div class="mjl-hub-actions">
       ${candidate?`<span data-tooltip-text="${esc(reason)}"><button type="button" data-hub="install" ${canInstall?"":"disabled"}>${action}</button></span>`:""}
       ${installed&&!installed.active?'<button type="button" data-hub="enable">Включить в мире</button>':""}
-      ${card.repo?`<a href="${esc(card.repo)}" target="_blank" rel="noopener noreferrer">GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`:""}</div></div></details>`;
+      ${card.repo?`<a href="${esc(card.repo)}" target="_blank" rel="noopener noreferrer">GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`:""}</div>`;
   }
 
   _replaceHTML(html,content){
@@ -159,38 +165,40 @@ class Hub extends ApplicationV2{
     const root=this.element.querySelector(".mjl-hub-shell");
     const fields=[...root.querySelectorAll(".mjl-hub-filters [name]")];
     const elements=[...root.querySelectorAll("[data-card]")];
+    const layout=root.querySelector(".mjl-hub-layout");
+    const sidebar=root.querySelector(".mjl-hub-details");
+    const seen=new Set(preferences().seen??[]);
+    const select=id=>{
+      this.selected=id;
+      for(const element of elements)element.setAttribute("aria-pressed",String(element.dataset.card===id));
+      sidebar.innerHTML=this.details(cards.find(card=>card.id===id),!seen.has(id));
+      sidebar.scrollTop=0;
+    };
     const filter=()=>{
       for(const field of fields)this.filters[field.name]=field.value;
-      let matches=0;
       for(const element of elements){
         const card=cards.find(card=>card.id===element.dataset.card);
         element.hidden=!card||!matchesCard(card,stateFor(card),this.filters);
-        if(!element.hidden)matches++;
       }
-      root.querySelector("[data-empty]").hidden=!!matches||!!loading;
+      const first=elements.find(element=>!element.hidden);
+      const selected=elements.find(element=>element.dataset.card===this.selected&&!element.hidden);
+      root.querySelector("[data-empty]").hidden=!!first||!!loading;
+      if(!selected||!sidebar.hasChildNodes())select(selected?.dataset.card??first?.dataset.card??"");
     };
     for(const field of fields)field.addEventListener("input",filter);
-    for(const element of elements){
-      element.addEventListener("toggle",()=>{
-        if(element.open)this.expanded=element.dataset.card;
-        else if(this.expanded===element.dataset.card)this.expanded="";
-      });
-      const summary=element.querySelector("summary");
-      summary.addEventListener("keydown",event=>{
-        if(event.key!=="Enter"&&event.key!==" ")return;
-        event.preventDefault();
-        event.stopPropagation();
-        if(!event.repeat)summary.click();
-      });
-    }
     root.addEventListener("click",event=>{
+      const tile=event.target.closest("[data-card]");
+      if(tile){
+        select(tile.dataset.card);
+        if(getComputedStyle(layout).overflowY==="auto")sidebar.scrollIntoView({block:"nearest"});
+        return;
+      }
       const action=event.target.closest("[data-hub]")?.dataset.hub;
       if(action==="reset"){for(const field of fields)field.value="";filter();}
-      if(action==="refresh"){refresh();this.render();}
+      if(action==="refresh"){refresh({notify:false});this.render();}
       if(action==="enable"&&allowed())new foundry.applications.sidebar.apps.ModuleManagement().render({force:true});
-      if(action==="install"){
-        const id=event.target.closest("[data-card]")?.dataset.card;
-        const card=cards.find(card=>card.id===id);
+      if(action==="install"||action==="updateHub"){
+        const card=action==="updateHub"?hubRelease:cards.find(card=>card.id===this.selected);
         if(card)install(card).catch(error=>ui.notifications.error(error.message));
       }
     });
@@ -200,9 +208,10 @@ class Hub extends ApplicationV2{
   }
 }
 
-function open(){
+function open({updates=false}={}){
   if(!allowed())return;
   instance??=new Hub();
+  if(updates)instance.filters={query:"",status:"update",category:""};
   instance.render({force:true});
   if(!cards.length)refresh();
   return instance;
@@ -216,7 +225,10 @@ Hooks.once("init",()=>{
   game.settings.register(ID,"seen",{scope:"client",config:false,type:Object,default:{}});
   game.settings.register(ID,"source",{scope:"world",config:true,type:String,default:SOURCE,
     name:"Источник каталога MJl",hint:"Публичный catalog.json из репозитория MJl2517 на raw.githubusercontent.com.",
-    onChange:refresh});
+    onChange:()=>refresh({notify:false})});
+  game.settings.register(ID,"autoCheck",{scope:"world",config:true,type:Boolean,default:true,
+    name:"Проверять обновления автоматически",hint:"При входе и раз в 30 минут проверять включённые модули и сообщать мастеру в личном чате.",
+    onChange:enabled=>{if(enabled)refresh();}});
   game.settings.registerMenu(ID,"open",{name:TITLE,label:"Открыть каталог",icon:"fa-solid fa-store",type:HubMenu,restricted:true});
 });
 Hooks.on("getSceneControlButtons",controls=>{
@@ -227,6 +239,11 @@ Hooks.on("getSceneControlButtons",controls=>{
 });
 Hooks.once("ready",()=>{
   if(!allowed())return;
-  refresh();
-  setInterval(refresh,30*60*1000);
+  const check=()=>{if(game.settings.get(ID,"autoCheck"))refresh();};
+  check();
+  setInterval(check,30*60*1000);
+});
+Hooks.on("renderChatMessageHTML",(message,html)=>{
+  if(allowed()&&message.isContentVisible&&message.getFlag(ID,"updates"))
+    html.querySelector("[data-mjl-hub-updates]")?.addEventListener("click",()=>open({updates:true}));
 });

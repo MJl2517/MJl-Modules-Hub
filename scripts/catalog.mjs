@@ -84,7 +84,8 @@ export function notices(cards, installed, previous, newer, version){
   const news=previous?.initialized?cards.filter(card=>card.id!==HUB_ID&&!seen.includes(card.id)):[];
   const updates=cards.filter(card=>{
     const module=installed.get(card.id);
-    return module?.active&&availabilityFor(card,module,version,newer).update;
+    return module?.active&&availabilityFor(card,module,version,newer).update&&
+      previous?.chatVersions?.[card.id]!==card.release.version;
   });
   return {news,updates};
 }
