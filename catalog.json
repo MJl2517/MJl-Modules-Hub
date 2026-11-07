@@ -3,23 +3,15 @@
     "id": "mjl-pointcrawl",
     "title": "MJl Pointcrawl",
     "category": "Путешествия",
-    "description": "Региональные карты, маршруты между локациями и заявки на путешествия. С Хроникой можно связать локации с карточками и галереями.",
+    "description": "Помогает вести путешествия в D&D 5e. Мастер размечает регионы и маршруты, а игроки выбирают путь и отправляют заявки на переход. Локации можно связать с карточками Хроник.",
     "art": "pointcrawl",
     "manifest": "https://raw.githubusercontent.com/MJl2517/dnd-point-crawl-2024/main/module.json"
-  },
-  {
-    "id": "mjl-modules-hub",
-    "title": "MJl Modules Hub",
-    "category": "Каталог",
-    "description": "Витрина модулей MJl. Показывает новинки и сверяет установленные версии с GitHub.",
-    "art": "raspberry",
-    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/module.json"
   },
   {
     "id": "dungeondraft-tile-browser",
     "title": "Dungeondraft Tile Browser",
     "category": "Карты",
-    "description": "Каталог изображений Dungeondraft для выбора и размещения объектов на сцене Foundry.",
+    "description": "Собирает объекты из пакетов Dungeondraft и папок с изображениями в библиотеку. Ищите мебель и декор по тегам, перекрашивайте доступные варианты и размещайте их на сцене как тайлы.",
     "art": "dungeon",
     "manifest": "https://raw.githubusercontent.com/MJl2517/Foundry-module-dungeondraft-tiles/main/dungeondraft-tile-browser/module.json"
   },
@@ -27,7 +19,7 @@
     "id": "watabou-one-page-dungeon-importer",
     "title": "One Page Dungeon Importer",
     "category": "Карты",
-    "description": "Создаёт сцены Foundry из SVG-планов генератора Watabou One Page Dungeon.",
+    "description": "Превращает SVG-карту Watabou One Page Dungeon в сцену Foundry. Импортирует фон, совмещает сетку и автоматически расставляет стены и двери.",
     "art": "importer",
     "manifest": "https://raw.githubusercontent.com/MJl2517/Foundry-module-one-page-dungeon-svg-importer/main/watabou-one-page-dungeon-importer/module.json"
   }

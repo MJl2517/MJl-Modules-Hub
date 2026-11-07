@@ -29,6 +29,7 @@
 .mjl-hub-new { left:8px; top:auto; bottom:8px; background:#922c52; color:#fff; }
 .mjl-hub-card-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; }
 .mjl-hub-card-heading small { display:block; margin-top:3px; }
+.mjl-hub-card-description { display:block; padding:0 12px 12px; color:var(--mjl-muted); line-height:1.4; overflow-wrap:anywhere; }
 .mjl-hub-card[open] .mjl-hub-card-heading i { transform:rotate(180deg); }
 .mjl-hub-card-details { border-top:1px solid var(--mjl-border); padding:10px 12px 12px; overflow-wrap:anywhere; }
 .mjl-hub-card-details p { margin:0 0 8px; }

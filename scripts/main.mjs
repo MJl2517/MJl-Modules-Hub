@@ -1,6 +1,5 @@
-import {matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "./catalog.mjs";
+import {HUB_ID as ID,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "./catalog.mjs";
 
-const ID="mjl-modules-hub";
 const SOURCE="https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/catalog.json";
 const {ApplicationV2,DialogV2}=foundry.applications.api;
 const {escapeHTML:esc,isNewerVersion:newer}=foundry.utils;
@@ -37,8 +36,9 @@ function refresh(){
       }catch{errors++;}
     }
     const next=[...entries.values()];
-    for(let i=0;i<next.length;i+=6){
-      await Promise.all(next.slice(i,i+6).map(async card=>{
+    const releases=[...next,{id:ID,title:"MJl Modules Hub",manifest:new URL("module.json",SOURCE).href}];
+    for(let i=0;i<releases.length;i+=6){
+      await Promise.all(releases.slice(i,i+6).map(async card=>{
         try{
           card.release=releaseFor(card,await json(card.manifest));
           if(!card.release)throw Error("Invalid manifest");
@@ -46,7 +46,7 @@ function refresh(){
       }));
     }
     cards=next;
-    const previous=preferences(),{news,updates}=notices(cards,game.modules,previous,newer);
+    const previous=preferences(),{news,updates}=notices(releases,game.modules,previous,newer);
     const announced=new Set(previous.announced??[]),versions={...previous.versions};
     const fresh=news.filter(card=>!announced.has(card.id));
     const changed=updates.filter(card=>versions[card.id]!==card.release.version);
@@ -133,8 +133,9 @@ class Hub extends ApplicationV2{
         <span class="mjl-hub-badge" data-update="${update}">${esc(label)}</span>
         ${isNew?'<span class="mjl-hub-new">Новинка</span>':""}
       </span><span class="mjl-hub-card-heading"><span><strong>${esc(card.title)}</strong><small>${esc(card.category)}</small></span>
-      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></summary>
-      <div class="mjl-hub-card-details"><p>${esc(card.description)}</p>
+      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span>
+      <span class="mjl-hub-card-description">${esc(card.description)}</span></summary>
+      <div class="mjl-hub-card-details">
       ${installed?`<p>На сервере ${esc(installed.version)}</p>`:""}
       ${card.release?`<p>На GitHub ${esc(card.release.version)}${card.release.verified?` · Проверено на Foundry ${esc(card.release.verified)}`:""}</p>`:""}
       <div class="mjl-hub-actions">

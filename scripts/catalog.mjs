@@ -1,3 +1,4 @@
+export const HUB_ID="mjl-modules-hub";
 const owner="mjl2517";
 const art=new Set(["pointcrawl","travel","dungeon","importer"]);
 const clean=text=>typeof text==="string"?text.trim():"";
@@ -16,7 +17,7 @@ export function rawSource(value, filename){
 export function normalizeCatalog(entries){
   if(!Array.isArray(entries)||entries.length>80)throw Error("Ожидается список из 80 карточек или меньше.");
   const ids=new Set();
-  return entries.filter(row=>row?.manifest).map(row=>{
+  return entries.filter(row=>row?.manifest&&row.id!==HUB_ID).map(row=>{
     const {id,title,description,category,manifest,art:picture}=row??{};
     if(typeof id!=="string"||!key.test(id)||ids.has(id)||!clean(title)||!clean(description)){
       throw Error("В каталоге есть дубли или карточки без идентификатора, названия и описания.");
@@ -45,7 +46,7 @@ export function releaseFor(card, data){
 
 export function notices(cards, installed, previous, newer){
   const seen=Array.isArray(previous?.seen)?previous.seen:[];
-  const news=previous?.initialized?cards.filter(card=>!seen.includes(card.id)):[];
+  const news=previous?.initialized?cards.filter(card=>card.id!==HUB_ID&&!seen.includes(card.id)):[];
   const updates=cards.filter(card=>{
     const module=installed.get(card.id);
     return module?.active&&card.release&&newer(card.release.version,module.version);
