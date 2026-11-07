@@ -1,4 +1,4 @@
-import {HUB_ID as ID,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "./catalog.mjs";
+import {HUB_ID as ID,availabilityFor,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "./catalog.mjs";
 
 const SOURCE="https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/catalog.json";
 const TITLE="MJl - Modules Hub";
@@ -47,7 +47,7 @@ function refresh(){
       }));
     }
     cards=next;
-    const previous=preferences(),{news,updates}=notices(releases,game.modules,previous,newer);
+    const previous=preferences(),{news,updates}=notices(releases,game.modules,previous,newer,game.version);
     const announced=new Set(previous.announced??[]),versions={...previous.versions};
     const fresh=news.filter(card=>!announced.has(card.id));
     const changed=updates.filter(card=>versions[card.id]!==card.release.version);
@@ -64,19 +64,14 @@ function refresh(){
   return loading;
 }
 
-function stateFor(card){
-  const installed=game.modules.get(card.id),remote=card.release?.version;
-  const update=!!(installed&&remote&&newer(remote,installed.version));
-  const label=update?`Обновление ${remote}`:installed?.active?"Включён в мире":installed?"Установлен":remote?"Доступен на GitHub":"Манифест не проверен";
-  return {installed,update,label};
-}
+const stateFor=card=>availabilityFor(card,game.modules.get(card.id),game.version,newer);
 
 async function install(card){
   const url=rawSource(card.manifest,"module.json");
-  if(!allowed()||!url||!card.release)return;
-  if(card.release?.minimum&&newer(card.release.minimum,game.version)||
-     card.release?.maximum&&newer(game.version,card.release.maximum)){
-    ui.notifications.warn("Этот выпуск несовместим с текущей версией Foundry.");
+  if(!allowed()||!url)return;
+  const state=stateFor(card);
+  if(!state.canInstall){
+    ui.notifications.warn(esc(state.reason));
     return;
   }
   const proceed=await DialogV2.confirm({
@@ -113,12 +108,12 @@ class Hub extends ApplicationV2{
       `<option value="${esc(value)}" ${this.filters[name]===value?"selected":""}>${esc(title)}</option>`).join("");
     const tiles=cards.map(card=>this.tile(card,!seen.has(card.id))).join("");
     return `<section class="mjl-hub-shell"><header class="mjl-hub-head">
-      <img src="${esc(asset("raspberry"))}" alt=""><div><h2>${TITLE}</h2><p>Каталог модулей для Foundry VTT</p></div>
+      <img src="${esc(asset("raspberry"))}" alt=""><div><h2>${TITLE}</h2><p>Версия сервера Foundry ${esc(game.version)}</p></div>
       <button type="button" data-hub="refresh" ${loading?"disabled":""}><i class="fa-solid fa-rotate" aria-hidden="true"></i> Проверить версии</button></header>
       <div class="mjl-hub-status" role="status">${loading?"Проверяем GitHub…":errors?`Не удалось проверить источники GitHub: ${errors}. Карточки каталога доступны.`:""}</div>
       <div class="mjl-hub-layout"><aside class="mjl-hub-filters">
         <label>Поиск<input type="search" name="query" value="${esc(this.filters.query)}" placeholder="Найти модуль"></label>
-        <label>Статус<select name="status">${options("status",[["","Все модули"],["active","Включены в мире"],["installed","Установлены"],["update","Есть обновление"],["available","Доступны на GitHub"]])}</select></label>
+        <label>Статус<select name="status">${options("status",[["","Все модули"],["active","Включены в мире"],["installed","Установлены"],["update","Есть обновление"],["available","Можно установить"]])}</select></label>
         <label>Категория<select name="category">${options("category",[["","Все категории"],...categories.map(category=>[category,category])])}</select></label>
         <button type="button" data-hub="reset">Сбросить фильтры</button>
       </aside><section class="mjl-hub-results" aria-label="Модули">
@@ -127,20 +122,22 @@ class Hub extends ApplicationV2{
   }
 
   tile(card,isNew){
-    const {installed,update,label}=stateFor(card);
+    const {installed,update,label,compatibility,reason,candidate,canInstall,action}=stateFor(card);
     return `<details class="mjl-hub-card" name="mjl-hub-card" data-card="${card.id}" ${this.expanded===card.id?"open":""}>
       <summary><span class="mjl-hub-cover">
         <img src="${esc(asset(card.art))}" alt="">
-        <span class="mjl-hub-badge" data-update="${update}">${esc(label)}</span>
+        <span class="mjl-hub-badge" data-update="${update}" data-tooltip-text="${esc(reason)}">${esc(label)}</span>
         ${isNew?'<span class="mjl-hub-new">Новинка</span>':""}
       </span><span class="mjl-hub-card-heading"><span><strong>${esc(card.title)}</strong><small>${esc(card.category)}</small></span>
       <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span>
+      <span class="mjl-hub-compatibility" data-state="${compatibility.state}" data-tooltip-text="${esc(compatibility.reason)}">${esc(compatibility.requirement)}${compatibility.state==="unverified"?" · не проверено":""}</span>
       <span class="mjl-hub-card-description">${esc(card.description)}</span></summary>
       <div class="mjl-hub-card-details">
+      <p class="mjl-hub-availability">${esc(reason)}</p>
       ${installed?`<p>На сервере ${esc(installed.version)}</p>`:""}
       ${card.release?`<p>На GitHub ${esc(card.release.version)}${card.release.verified?` · Проверено на Foundry ${esc(card.release.verified)}`:""}</p>`:""}
       <div class="mjl-hub-actions">
-      ${card.release&&(!installed||update)?`<button type="button" data-hub="install">${update?"Обновить":"Установить"}</button>`:""}
+      ${candidate?`<span data-tooltip-text="${esc(reason)}"><button type="button" data-hub="install" ${canInstall?"":"disabled"}>${action}</button></span>`:""}
       ${installed&&!installed.active?'<button type="button" data-hub="enable">Включить в мире</button>':""}
       ${card.repo?`<a href="${esc(card.repo)}" target="_blank" rel="noopener noreferrer">GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`:""}</div></div></details>`;
   }

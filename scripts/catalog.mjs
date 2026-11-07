@@ -3,6 +3,11 @@ const owner="mjl2517";
 const art=new Set(["pointcrawl","travel","dungeon","importer","dungeon-sketch","campaign-journal"]);
 const clean=text=>typeof text==="string"?text.trim():"";
 const key=/^[a-z\d][a-z\d-]{0,63}$/;
+const versionPattern=/^[vV]?\d[\dA-Za-z.+-]{0,49}$/;
+const compatibilityVersion=value=>{
+  const version=typeof value==="number"?String(value):clean(value);
+  return versionPattern.test(version)?version:"";
+};
 
 export function rawSource(value, filename){
   try{
@@ -32,7 +37,7 @@ export function normalizeCatalog(entries){
 }
 
 export function releaseFor(card, data){
-  if(!data||data.id!==card.id||typeof data.version!=="string"||!/^[vV]?\d[\dA-Za-z.+-]{0,49}$/.test(data.version))return null;
+  if(!data||data.id!==card.id||typeof data.version!=="string"||!versionPattern.test(data.version))return null;
   try{
     const zip=new URL(data.download), source=new URL(card.manifest);
     const repo=source.pathname.split("/").slice(0,3).join("/").toLowerCase()+"/";
@@ -41,25 +46,55 @@ export function releaseFor(card, data){
       !zip.pathname.toLowerCase().startsWith(repo)||!zip.pathname.toLowerCase().endsWith(".zip"))return null;
   }catch{return null;}
   const {minimum,verified,maximum}=data.compatibility??{};
-  return {version:data.version,minimum:clean(minimum),verified:clean(verified),maximum:clean(maximum)};
+  return {version:data.version,minimum:compatibilityVersion(minimum),verified:compatibilityVersion(verified),maximum:compatibilityVersion(maximum)};
 }
 
-export function notices(cards, installed, previous, newer){
+export function coreCompatibility(release,version,newer){
+  if(!release)return {state:"unknown",requirement:"Требования Foundry не проверены",reason:"Не удалось получить или подтвердить манифест GitHub."};
+  const {minimum,maximum,verified}=release;
+  const majorOnly=value=>Number.isInteger(Number(value));
+  const upper=maximum&&(majorOnly(maximum)?`${Number(maximum)}.x`:maximum);
+  const requirement=minimum&&upper?`Foundry ${minimum}–${upper}`:minimum?`Foundry от ${minimum}`:upper?`Foundry до ${upper}`:"Границы версий Foundry не указаны";
+  if(minimum&&newer(minimum,version))return {state:"blocked",requirement,reason:`На сервере Foundry ${version}. Нужна версия ${minimum} или новее.`};
+  if(maximum&&newer(version,maximum,{majorOnly:majorOnly(maximum)}))return {state:"blocked",requirement,reason:`На сервере Foundry ${version}. Манифест допускает версии до ${upper} включительно.`};
+  if(!verified)return {state:"unverified",requirement,reason:`На сервере Foundry ${version}. Автор не указал проверенную версию.`};
+  if(newer(version,verified,{majorOnly:majorOnly(verified)}))return {state:"unverified",requirement,reason:`На сервере Foundry ${version}. Выпуск проверен до ${verified}, текущая версия ещё не проверена.`};
+  return {state:"compatible",requirement,reason:`На сервере Foundry ${version}. Выпуск подходит по манифесту, проверен до ${verified}.`};
+}
+
+export function availabilityFor(card,installed,version,newer){
+  const compatibility=coreCompatibility(card.release,version,newer);
+  const newerRelease=!!(installed&&card.release&&newer(card.release.version,installed.version));
+  const candidate=!installed||newerRelease;
+  const canInstall=candidate&&!!card.release&&compatibility.state!=="blocked";
+  const update=newerRelease&&canInstall;
+  const label=update?`Обновление ${card.release.version}`:
+    candidate&&compatibility.state==="blocked"?(installed?"Обновление недоступно":"Несовместим с Foundry"):
+    installed?.active?"Включён в мире":installed?"Установлен":canInstall?"Можно установить":"Манифест не проверен";
+  const action=newerRelease?"Обновить":"Установить";
+  const installStatus=canInstall?(newerRelease?"Доступно обновление с GitHub.":"Доступна установка с GitHub."):
+    candidate?(newerRelease?"Обновление из Hub сейчас недоступно.":"Установка из Hub сейчас недоступна."):
+    installed?.active?"Модуль установлен и включён в этом мире.":"Модуль установлен. Активация доступна через управление модулями.";
+  return {installed,update,available:!installed&&canInstall,candidate,canInstall,label,action,compatibility,
+    reason:`${installStatus} ${compatibility.reason}`};
+}
+
+export function notices(cards, installed, previous, newer, version){
   const seen=Array.isArray(previous?.seen)?previous.seen:[];
   const news=previous?.initialized?cards.filter(card=>card.id!==HUB_ID&&!seen.includes(card.id)):[];
   const updates=cards.filter(card=>{
     const module=installed.get(card.id);
-    return module?.active&&card.release&&newer(card.release.version,module.version);
+    return module?.active&&availabilityFor(card,module,version,newer).update;
   });
   return {news,updates};
 }
 
-export function matchesCard(card,{installed,update},{query="",status="",category=""}={}){
+export function matchesCard(card,{installed,update,available},{query="",status="",category=""}={}){
   if(category&&card.category!==category)return false;
   if(status==="active"&&!installed?.active||
     status==="installed"&&!installed||
     status==="update"&&!update||
-    status==="available"&&(installed||!card.release))return false;
+    status==="available"&&!available)return false;
   const search=query.trim().toLocaleLowerCase("ru");
   return !search||[card.title,card.description,card.category,card.id].join(" ").toLocaleLowerCase("ru").includes(search);
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
-import {HUB_ID,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "../scripts/catalog.mjs";
+import {HUB_ID,availabilityFor,coreCompatibility,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "../scripts/catalog.mjs";
 
 const entries=JSON.parse(await readFile(new URL("../catalog.json",import.meta.url),"utf8"));
 const cards=normalizeCatalog(entries);
@@ -30,12 +30,31 @@ assert.equal(rawSource("https://raw.githubusercontent.com/other/project/main/cat
 assert.throws(()=>normalizeCatalog([pointcrawl,pointcrawl]),/дубли/);
 
 const installed=new Map([[pointcrawl.id,{active:true,version:"1.1.0"}],[HUB_ID,{active:true,version:"1.1.0"}]]);
-const newer=(a,b)=>a.localeCompare(b,undefined,{numeric:true})>0;
+const newer=(a,b,{majorOnly=false}={})=>majorOnly?Number(a.split(".")[0])>Number(b.split(".")[0]):a.localeCompare(b,undefined,{numeric:true})>0;
+const core="14.361";
+const bounds=releaseFor(pointcrawl,{...base,compatibility:{minimum:"14.361",verified:13,maximum:14}});
+assert.deepEqual([bounds.minimum,bounds.verified,bounds.maximum],["14.361","13","14"]);
+assert.equal(coreCompatibility(bounds,"14.360",newer).state,"blocked");
+assert.equal(coreCompatibility(bounds,core,newer).state,"unverified");
+assert.equal(coreCompatibility(bounds,core,newer).requirement,"Foundry 14.361–14.x");
+assert.equal(coreCompatibility({...bounds,verified:"14"},core,newer).state,"compatible");
+assert.equal(coreCompatibility({...bounds,maximum:"14.360"},core,newer).state,"blocked");
+assert.equal(coreCompatibility(bounds,"15",newer).state,"blocked");
+const compatible=availabilityFor({...pointcrawl,release:bounds},undefined,core,newer);
+assert.equal(compatible.canInstall,true);
+assert.ok(matchesCard(pointcrawl,compatible,{status:"available"}));
+const unavailable=availabilityFor({...pointcrawl,release:bounds},undefined,"15",newer);
+assert.equal(unavailable.canInstall,false);
+assert.ok(!matchesCard(pointcrawl,unavailable,{status:"available"}));
+assert.equal(availabilityFor({...pointcrawl,release:null},undefined,core,newer).canInstall,false);
+const blockedUpdate={...pointcrawl,release:{...bounds,minimum:"15"}};
+assert.equal(availabilityFor(blockedUpdate,installed.get(pointcrawl.id),core,newer).update,false);
+assert.deepEqual(notices([blockedUpdate],installed,{},newer,core).updates,[]);
 const tracked=[...cards,hub];
-assert.deepEqual(notices(tracked,installed,{},newer).news,[]);
-const {news,updates}=notices(tracked,installed,{initialized:true,seen:cards.slice(1).map(card=>card.id)},newer);
+assert.deepEqual(notices(tracked,installed,{},newer,core).news,[]);
+const {news,updates}=notices(tracked,installed,{initialized:true,seen:cards.slice(1).map(card=>card.id)},newer,core);
 assert.deepEqual(news.map(card=>card.id),[pointcrawl.id]);
 assert.deepEqual(updates.map(card=>card.id),[pointcrawl.id,HUB_ID]);
 installed.get(pointcrawl.id).active=false;
-assert.deepEqual(notices(tracked,installed,{},newer).updates,[hub]);
+assert.deepEqual(notices(tracked,installed,{},newer,core).updates,[hub]);
 console.log("OK: curated sources, manifest and ZIP validation, novelty baseline, and active-module updates.");

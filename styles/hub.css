@@ -29,12 +29,17 @@
 .mjl-hub-new { left:8px; top:auto; bottom:8px; background:#922c52; color:#fff; }
 .mjl-hub-card-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; }
 .mjl-hub-card-heading small { display:block; margin-top:3px; }
+.mjl-hub-compatibility { display:block; margin:0 12px 8px; width:fit-content; max-width:calc(100% - 24px); padding:3px 6px; border-radius:4px; background:var(--mjl-bg); color:var(--mjl-muted); font-size:11px; overflow-wrap:anywhere; }
+.mjl-hub-compatibility[data-state=compatible] { color:#b4e1bb; }
+.mjl-hub-compatibility[data-state=unverified] { color:#f5c58a; }
+.mjl-hub-compatibility[data-state=blocked] { color:#ffb0ae; }
 .mjl-hub-card-description { display:block; padding:0 12px 12px; color:var(--mjl-muted); line-height:1.4; overflow-wrap:anywhere; }
 .mjl-hub-card[open] .mjl-hub-card-heading i { transform:rotate(180deg); }
 .mjl-hub-card-details { border-top:1px solid var(--mjl-border); padding:10px 12px 12px; overflow-wrap:anywhere; }
 .mjl-hub-card-details p { margin:0 0 8px; }
 .mjl-hub-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .mjl-hub-actions button { width:auto; }
+.mjl-hub-actions button:disabled { pointer-events:none; }
 .mjl-hub-actions a { color:var(--mjl-accent); }
 .mjl-hub-url { margin-block:6px; }
 @container(max-width:620px) {
