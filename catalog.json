@@ -16,6 +16,14 @@
     "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Dungeon-Sketch/main/module.json"
   },
   {
+    "id": "mjl-campaign-journal",
+    "title": "MJl - Campaign Journal",
+    "category": "Кампания",
+    "description": "Хроника кампании с карточками персонажей, галереями локаций и общими квестами. Игроки ведут заметки партии, а мастер управляет публикацией карточек и хранит закрытые записи.",
+    "art": "campaign-journal",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Campaign-Journal/main/module.json"
+  },
+  {
     "id": "dungeondraft-tile-browser",
     "title": "MJl - Dungeondraft Tile Browser",
     "category": "Карты",

@@ -8,6 +8,12 @@
 
 ## Обложки этого выпуска
 
+**Campaign Journal**
+
+Встроенный ImageGen. Обложки Pointcrawl и Dungeon Sketch использованы как референсы стиля и эмблемы.
+
+Use case: illustration-story. Create a new full-bleed 3:2 raster fantasy catalogue cover for Campaign Journal. Use the supplied covers only as references for the raspberry mascot and consistent painted style: rich gouache and oil brush texture, warm amber candlelight, deep plum shadows and raspberry red. A large, round raspberry with two green leaves, no face or limbs, sits behind an open, leather-bound campaign journal on a medieval writing desk. Make the book immediately recognizable by its spine, ribbon bookmark and layered pages. On the left page show a small ink portrait of a cloaked adventurer, on the right a painted mountain stronghold mounted like a keepsake, with a small red wax seal near the bottom. The mascot and book fill the middle 75% and remain legible at card scale. Keep this a book, not a map. No writing, letters, grids, paths, logos, UI, borders or watermark.
+
 **Dungeon Sketch**
 
 Встроенный ImageGen. Обложки Pointcrawl и Dungeondraft использованы как референсы стиля и эмблемы.
