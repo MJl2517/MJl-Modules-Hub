@@ -30,6 +30,7 @@ assert.equal(rawSource("https://raw.githubusercontent.com/other/project/main/cat
 assert.throws(()=>normalizeCatalog([pointcrawl,pointcrawl]),/дубли/);
 
 const tokens=cards.find(card=>card.id==="mjl-token-display");
+assert.equal(tokens.art,"token-display");
 assert.match(tokens.repo,/\/MJl2517\/MJl-Token-Dislplay$/);
 assert.match(tokens.dependencyNotes.enhancedcombathud.description,/комплект/);
 const dependencies=dependencyGroups({

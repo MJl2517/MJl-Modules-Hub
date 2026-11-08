@@ -54,7 +54,7 @@
     "title": "MJl - Token Display",
     "category": "Токены",
     "description": "Цветная дуга здоровья с временными ОЗ и прибавкой к максимуму. По клику можно применить лечение или урон. Иконки по углам показывают предметы в руках.",
-    "art": "raspberry",
+    "art": "token-display",
     "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Token-Dislplay/main/module.json",
     "dependencyNotes": {
       "dnd5e": {"title": "D&D 5e", "description": "Предоставляет данные здоровья, экипировки и свойств оружия."},

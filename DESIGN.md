@@ -8,6 +8,12 @@
 
 ## Обложки этого выпуска
 
+**Token Display**
+
+Встроенный ImageGen. Обложка Loot and Share использована как референс стиля, а скриншот Token Display — как референс формы и цветов дуги.
+
+Use case: illustration-story. Create a new 3:2 landscape cover for the Token Display card in the MJl Hub catalogue. Image 1 is a reference for MJl's round raspberry mascot with two green leaves, painterly oil-and-gouache texture, and warm amber light over deep plum. Image 2 is a reference only for the shape and color language of the health arc. On a dark medieval tabletop, place one large circular brass tabletop token with the painted portrait of a silver-armored adventurer in a blue cloak. Frame its lower half with a thick, visibly segmented luminous semicircular health arc: warm amber-orange is dominant, with separate violet and sapphire-blue segments on the left and a fine green outer edge. A sword seal and a shield seal sit at its lower corners. The recognizable MJl raspberry peeks from behind the token, face-free and without limbs. Use the contrast and textured brushwork of the catalogue reference. Keep the token, arc, equipment seals, and raspberry in the central 75% so they read at thumbnail size. Full bleed, clean silhouettes, no lettering, numbers, interface panels, grid, external frame, or watermark.
+
 **Loot and Share**
 
 Встроенный ImageGen. Обложки Campaign Journal и Dungeon Sketch использованы как референсы стиля и эмблемы.
