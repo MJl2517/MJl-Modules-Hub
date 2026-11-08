@@ -1,4 +1,4 @@
-import {HUB_ID as ID,availabilityFor,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "./catalog.mjs";
+import {HUB_ID as ID,availabilityFor,dependencyGroups,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "./catalog.mjs";
 
 const SOURCE="https://raw.githubusercontent.com/MJl2517/MJl-Modules-Hub/main/catalog.json";
 const TITLE="MJl - Modules Hub";
@@ -71,6 +71,23 @@ function refresh({notify=game.settings.get(ID,"autoCheck")}={}){
 }
 
 const stateFor=card=>availabilityFor(card,game.modules.get(card.id),game.version,newer);
+
+function dependencyDetails(card,installed){
+  const groups=card.release?.dependencies??(installed?dependencyGroups(installed.relationships):null);
+  if(!groups)return '<p class="mjl-hub-dependencies">Не удалось проверить зависимости.</p>';
+  const list=(title,rows,isSystem=false)=>rows.length?
+    `<h4>${title}</h4><ul>${rows.map(({id,minimum})=>{
+      const note=card.dependencyNotes[id];
+      const pkg=isSystem?(game.system.id===id?game.system:null):game.modules.get(id);
+      return `<li><strong>${esc(note?.title||pkg?.title||id)}</strong>${minimum?` · от ${esc(minimum)}`:""}
+        ${note?.description?`<small>${esc(note.description)}</small>`:""}</li>`;
+    }).join("")}</ul>`:"";
+  return `<section class="mjl-hub-dependencies" aria-label="Зависимости">
+    ${list("Поддерживаемые системы",groups.systems,true)}
+    ${list("Обязательные модули",groups.required)||"<p>Обязательных модулей нет.</p>"}
+    ${list("Рекомендуемые модули",groups.recommended)}
+    </section>`;
+}
 
 async function install(card){
   const url=rawSource(card.manifest,"module.json");
@@ -145,7 +162,8 @@ class Hub extends ApplicationV2{
       <div class="mjl-hub-actions">
       ${candidate?`<span data-tooltip-text="${esc(reason)}"><button type="button" data-hub="install" ${canInstall?"":"disabled"}>${action}</button></span>`:""}
       ${installed&&!installed.active?'<button type="button" data-hub="enable">Включить в мире</button>':""}
-      ${card.repo?`<a href="${esc(card.repo)}" target="_blank" rel="noopener noreferrer">GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`:""}</div>`;
+      ${card.repo?`<a href="${esc(card.repo)}" target="_blank" rel="noopener noreferrer">GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`:""}</div>
+      ${dependencyDetails(card,installed)}`;
   }
 
   _replaceHTML(html,content){

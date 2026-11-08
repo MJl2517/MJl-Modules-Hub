@@ -38,6 +38,11 @@
 .mjl-hub-actions button { width:auto; }
 .mjl-hub-actions button:disabled { pointer-events:none; }
 .mjl-hub-actions a { color:var(--mjl-accent); }
+.mjl-hub-dependencies { margin-top:12px; padding-top:10px; border-top:1px solid var(--mjl-border); }
+.mjl-hub-dependencies h4 { margin:0 0 5px; font-size:14px; }
+.mjl-hub-dependencies ul { margin:0 0 10px; padding:0; list-style:none; }
+.mjl-hub-dependencies li + li { margin-top:6px; }
+.mjl-hub-dependencies small { display:block; color:var(--mjl-muted); line-height:1.4; }
 .mjl-hub-url { margin-block:6px; }
 @container(max-width:840px) {
   .mjl-hub-layout { grid-template-columns:minmax(0,1fr) minmax(215px,32%); grid-template-rows:auto minmax(0,1fr); }

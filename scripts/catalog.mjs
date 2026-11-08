@@ -3,6 +3,7 @@ const owner="mjl2517";
 const art=new Set(["pointcrawl","travel","dungeon","importer","dungeon-sketch","campaign-journal","loot-and-share"]);
 const clean=text=>typeof text==="string"?text.trim():"";
 const key=/^[a-z\d][a-z\d-]{0,63}$/;
+const packageId=/^[A-Za-z\d_-]{1,80}$/;
 const versionPattern=/^[vV]?\d[\dA-Za-z.+-]{0,49}$/;
 const compatibilityVersion=value=>{
   const version=typeof value==="number"?String(value):clean(value);
@@ -23,17 +24,40 @@ export function normalizeCatalog(entries){
   if(!Array.isArray(entries)||entries.length>80)throw Error("Ожидается список из 80 карточек или меньше.");
   const ids=new Set();
   return entries.filter(row=>row?.manifest&&row.id!==HUB_ID).map(row=>{
-    const {id,title,description,category,manifest,art:picture}=row??{};
+    const {id,title,description,category,manifest,art:picture,dependencyNotes}=row??{};
     if(typeof id!=="string"||!key.test(id)||ids.has(id)||!clean(title)||!clean(description)){
       throw Error("В каталоге есть дубли или карточки без идентификатора, названия и описания.");
     }
     ids.add(id);
     const url=rawSource(manifest,"module.json");
     if(!url)throw Error(`Некорректный GitHub-манифест для ${id}.`);
-    return {id,title:clean(title).slice(0,100),description:clean(description).slice(0,700),
+    const notes=Object.fromEntries(Object.entries(dependencyNotes??{}).slice(0,40)
+      .filter(([id,note])=>packageId.test(id)&&note&&typeof note==="object")
+      .map(([id,note])=>[id,{title:clean(note.title).slice(0,100),description:clean(note.description).slice(0,300)}]));
+    return {id,title:clean(title).slice(0,100),description:clean(description).slice(0,700),dependencyNotes:notes,
       category:clean(category).slice(0,60),art:art.has(picture)?picture:"raspberry",
       manifest:url.href,repo:`https://github.com/${url.pathname.split("/").slice(1,3).join("/")}`};
   });
+}
+
+export function dependencyGroups(relationships){
+  const rows=(kind,type)=>{
+    const value=relationships?.[kind];
+    const entries=Array.isArray(value)||value instanceof Set?Array.from(value):[value];
+    const packages=new Map();
+    for(const entry of entries.slice(0,80)){
+      if(typeof entry?.id!=="string"||!packageId.test(entry.id)||(entry.type??type)!==type)continue;
+      packages.set(entry.id,{id:entry.id,minimum:compatibilityVersion(entry.compatibility?.minimum)});
+    }
+    return [...packages.values()];
+  };
+  const required=rows("requires","module");
+  const requiredIds=new Set(required.map(row=>row.id));
+  return {
+    systems:rows("systems","system"),
+    required,
+    recommended:rows("recommends","module").filter(row=>!requiredIds.has(row.id))
+  };
 }
 
 export function releaseFor(card, data){
@@ -46,7 +70,8 @@ export function releaseFor(card, data){
       !zip.pathname.toLowerCase().startsWith(repo)||!zip.pathname.toLowerCase().endsWith(".zip"))return null;
   }catch{return null;}
   const {minimum,verified,maximum}=data.compatibility??{};
-  return {version:data.version,minimum:compatibilityVersion(minimum),verified:compatibilityVersion(verified),maximum:compatibilityVersion(maximum)};
+  return {version:data.version,minimum:compatibilityVersion(minimum),verified:compatibilityVersion(verified),
+    maximum:compatibilityVersion(maximum),dependencies:dependencyGroups(data.relationships)};
 }
 
 export function coreCompatibility(release,version,newer){

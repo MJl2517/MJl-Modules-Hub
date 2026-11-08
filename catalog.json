@@ -5,7 +5,10 @@
     "category": "Путешествия",
     "description": "Помогает вести путешествия в D&D 5e. Мастер размечает регионы и маршруты, а игроки выбирают путь и отправляют заявки на переход. Локации можно связать с карточками Хроник.",
     "art": "pointcrawl",
-    "manifest": "https://raw.githubusercontent.com/MJl2517/dnd-point-crawl-2024/main/module.json"
+    "manifest": "https://raw.githubusercontent.com/MJl2517/dnd-point-crawl-2024/main/module.json",
+    "dependencyNotes": {
+      "socketlib": {"title": "Socketlib", "description": "Передаёт заявки игроков на переход и ответы между клиентами и мастером."}
+    }
   },
   {
     "id": "mjl-dungeon-sketch",
@@ -13,7 +16,12 @@
     "category": "Карты",
     "description": "Редактор подземелий прямо на сцене Foundry. Рисуйте комнаты, стены и двери, добавляйте этажи, свет и мебель. Изменения сохраняются автоматически, а точки интереса можно связать с Хрониками.",
     "art": "dungeon-sketch",
-    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Dungeon-Sketch/main/module.json"
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Dungeon-Sketch/main/module.json",
+    "dependencyNotes": {
+      "socketlib": {"title": "Socketlib", "description": "Передаёт мастеру запросы игроков на открытие контейнеров, получение добычи и переключение света."},
+      "mjl-campaign-journal": {"title": "MJl - Campaign Journal", "description": "Связывает точки интереса с карточками локаций и их галереями."},
+      "ag-fifthpendium": {"title": "AG Fifthpendium", "description": "Поддерживает свитки Fifthpendium при выдаче предметов из контейнеров."}
+    }
   },
   {
     "id": "mjl-campaign-journal",
@@ -21,7 +29,13 @@
     "category": "Кампания",
     "description": "Хроника кампании с карточками персонажей, галереями локаций и общими квестами. Игроки ведут заметки партии, а мастер управляет публикацией карточек и хранит закрытые записи.",
     "art": "campaign-journal",
-    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Campaign-Journal/main/module.json"
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Campaign-Journal/main/module.json",
+    "dependencyNotes": {
+      "socketlib": {"title": "Socketlib", "description": "Передаёт мастеру запросы игроков на сохранение общих карточек."},
+      "wgtgm-mini-calendar": {"title": "Mini Calendar", "description": "Отображает сроки квестов по календарю кампании."},
+      "mjl-pointcrawl": {"title": "MJl - Pointcrawl", "description": "Импортирует локации с карты путешествий и связывает их с карточками Хроник."},
+      "mjl-dungeon-sketch": {"title": "MJl - Dungeon Sketch", "description": "Открывает карточки локаций и галереи из точек интереса на сцене."}
+    }
   },
   {
     "id": "group-loot-and-share",
@@ -29,7 +43,24 @@
     "category": "Имущество",
     "description": "Общая добыча, обмен и склады для партии D&D 5e. Мастер выкладывает награды, а игроки передают вещи и монеты между общим мешком и инвентарём персонажей.",
     "art": "loot-and-share",
-    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-LootAndShare/main/module.json"
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-LootAndShare/main/module.json",
+    "dependencyNotes": {
+      "socketlib": {"title": "Socketlib", "description": "Передаёт активному мастеру запросы игроков на обмен и получение добычи."},
+      "ag-fifthpendium": {"title": "AG Fifthpendium", "description": "Сохраняет особенности шаблонов свитков и рецептов зачарования при переносе предметов."}
+    }
+  },
+  {
+    "id": "mjl-token-display",
+    "title": "MJl - Token Display",
+    "category": "Токены",
+    "description": "Цветная дуга здоровья с временными ОЗ и прибавкой к максимуму. По клику можно применить лечение или урон. Иконки по углам показывают предметы в руках.",
+    "art": "raspberry",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-Token-Dislplay/main/module.json",
+    "dependencyNotes": {
+      "dnd5e": {"title": "D&D 5e", "description": "Предоставляет данные здоровья, экипировки и свойств оружия."},
+      "enhancedcombathud": {"title": "Argon - Combat HUD (CORE)", "description": "Хранит активный комплект оружия Argon для синхронизации иконок рук."},
+      "enhancedcombathud-dnd5e": {"title": "Argon - Combat HUD (DND5E)", "description": "Подключает комплекты оружия Argon к D&D 5e. Для синхронизации нужны оба модуля Argon."}
+    }
   },
   {
     "id": "dungeondraft-tile-browser",

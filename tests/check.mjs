@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
-import {HUB_ID,availabilityFor,coreCompatibility,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "../scripts/catalog.mjs";
+import {HUB_ID,availabilityFor,coreCompatibility,dependencyGroups,matchesCard,normalizeCatalog,notices,rawSource,releaseFor} from "../scripts/catalog.mjs";
 
 const entries=JSON.parse(await readFile(new URL("../catalog.json",import.meta.url),"utf8"));
 const cards=normalizeCatalog(entries);
@@ -10,7 +10,7 @@ const hub={id:HUB_ID,title:"MJl Modules Hub",description:"Устаревшая �
 assert.ok(entries.every(card=>card.id!==HUB_ID));
 assert.deepEqual(normalizeCatalog([...entries,hub]),cards);
 assert.equal(cards[0],pointcrawl);
-assert.equal(cards.length,6);
+assert.equal(cards.length,7);
 assert.deepEqual(normalizeCatalog([{id:"local-only",title:"Локальный модуль"}]),[]);
 for(const card of cards){
   assert.match(card.title,/^MJl - .+/);
@@ -28,6 +28,22 @@ assert.equal(releaseFor(pointcrawl,{...base,id:"other"}),null);
 assert.equal(releaseFor(pointcrawl,{...base,download:"https://github.com/MJl2517/other/releases/download/v1/file.zip"}),null);
 assert.equal(rawSource("https://raw.githubusercontent.com/other/project/main/catalog.json","catalog.json"),null);
 assert.throws(()=>normalizeCatalog([pointcrawl,pointcrawl]),/дубли/);
+
+const tokens=cards.find(card=>card.id==="mjl-token-display");
+assert.match(tokens.repo,/\/MJl2517\/MJl-Token-Dislplay$/);
+assert.match(tokens.dependencyNotes.enhancedcombathud.description,/комплект/);
+const dependencies=dependencyGroups({
+  systems:{id:"dnd5e",compatibility:{minimum:"5.3.3"}},
+  requires:new Set([{id:"socketlib",compatibility:{minimum:"1.1.4"}},{id:"bad<id"}]),
+  recommends:[{id:"socketlib"},{id:"ag-fifthpendium"},{id:"other",type:"system"}]
+});
+assert.deepEqual(dependencies,{
+  systems:[{id:"dnd5e",minimum:"5.3.3"}],
+  required:[{id:"socketlib",minimum:"1.1.4"}],
+  recommended:[{id:"ag-fifthpendium",minimum:""}]
+});
+assert.deepEqual(releaseFor(pointcrawl,{...base,relationships:{requires:[{id:"socketlib"}]}}).dependencies.required,
+  [{id:"socketlib",minimum:""}]);
 
 const installed=new Map([[pointcrawl.id,{active:true,version:"1.1.0"}],[HUB_ID,{active:true,version:"1.1.0"}]]);
 const newer=(a,b,{majorOnly=false}={})=>majorOnly?Number(a.split(".")[0])>Number(b.split(".")[0]):a.localeCompare(b,undefined,{numeric:true})>0;
