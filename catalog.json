@@ -63,6 +63,16 @@
     }
   },
   {
+    "id": "mjl-ilmaren-combat",
+    "title": "MJl QOL Features",
+    "category": "Автоматизация",
+    "description": "Удаляйте области заклинаний кнопкой на карточке в чате. Автоматически назначайте состояние «Без сознания» при 0 хитов и снимайте его при восстановлении хитов. Обе функции настраиваются отдельно.",
+    "manifest": "https://raw.githubusercontent.com/MJl2517/MJl-QOL-Features/main/module.json",
+    "dependencyNotes": {
+      "dnd5e": {"title": "D&D 5e", "description": "Предоставляет карточки заклинаний, сведения о хитах и состояние «Без сознания»."}
+    }
+  },
+  {
     "id": "dungeondraft-tile-browser",
     "title": "MJl - Dungeondraft Tile Browser",
     "category": "Карты",

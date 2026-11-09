@@ -10,10 +10,10 @@ const hub={id:HUB_ID,title:"MJl Modules Hub",description:"Устаревшая �
 assert.ok(entries.every(card=>card.id!==HUB_ID));
 assert.deepEqual(normalizeCatalog([...entries,hub]),cards);
 assert.equal(cards[0],pointcrawl);
-assert.equal(cards.length,7);
+assert.equal(cards.length,8);
 assert.deepEqual(normalizeCatalog([{id:"local-only",title:"Локальный модуль"}]),[]);
 for(const card of cards){
-  assert.match(card.title,/^MJl - .+/);
+  assert.match(card.title,/^MJl (?:- )?.+/);
   const image=await readFile(new URL(`../art/${card.art}.webp`,import.meta.url));
   assert.equal(image.toString("ascii",8,12),"WEBP");
 }
@@ -33,6 +33,9 @@ const tokens=cards.find(card=>card.id==="mjl-token-display");
 assert.equal(tokens.art,"token-display");
 assert.match(tokens.repo,/\/MJl2517\/MJl-Token-Dislplay$/);
 assert.match(tokens.dependencyNotes.enhancedcombathud.description,/комплект/);
+const qol=cards.find(card=>card.id==="mjl-ilmaren-combat");
+assert.equal(qol.title,"MJl QOL Features");
+assert.match(qol.repo,/\/MJl2517\/MJl-QOL-Features$/);
 const dependencies=dependencyGroups({
   systems:{id:"dnd5e",compatibility:{minimum:"5.3.3"}},
   requires:new Set([{id:"socketlib",compatibility:{minimum:"1.1.4"}},{id:"bad<id"}]),
